@@ -17,6 +17,7 @@ import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.ActivityMainBinding
 import com.dicoding.storyapp.view.StoryAdapter
 import com.dicoding.storyapp.view.ViewModelFactory
+import com.dicoding.storyapp.view.addstory.AddStoryActivity
 import com.dicoding.storyapp.view.detailstory.DetailActivity
 import com.dicoding.storyapp.view.welcome.WelcomeActivity
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity(){
 
         loadTokens()
         setupView()
-//        setupFab()
+        setupFab()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -119,8 +120,12 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-//    private fun setupFab() {
-//    }
+    private fun setupFab() {
+        binding.fabAddStory.setOnClickListener{
+            val intent = Intent(this, AddStoryActivity::class.java)
+            startActivity(intent)
+        }
+    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE

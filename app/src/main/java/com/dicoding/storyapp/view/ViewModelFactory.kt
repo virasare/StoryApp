@@ -7,6 +7,7 @@ import com.dicoding.storyapp.data.remote.local.DetailStoryRepository
 import com.dicoding.storyapp.data.remote.local.StoryRepository
 import com.dicoding.storyapp.data.remote.local.UserRepository
 import com.dicoding.storyapp.di.Injection
+import com.dicoding.storyapp.view.addstory.AddStoryViewModel
 import com.dicoding.storyapp.view.detailstory.DetailViewModel
 import com.dicoding.storyapp.view.login.LoginViewModel
 import com.dicoding.storyapp.view.main.MainViewModel
@@ -24,9 +25,9 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(MainViewModel::class.java) -> {
                 MainViewModel(repository, provideRepositoryStory) as T
             }
-//            modelClass.isAssignableFrom(AddStoryViewModel::class.java) -> {
-//                AddStoryViewModel(repository, provideRepositoryStory) as T
-//            }
+            modelClass.isAssignableFrom(AddStoryViewModel::class.java) -> {
+                AddStoryViewModel(repository, provideRepositoryStory) as T
+            }
             modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
                 DetailViewModel(provideRepositoryDetail) as T
             }

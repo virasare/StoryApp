@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fab_add_story"
-        android:layout_margin="30dp"
+        android:layout_margin="40dp"
         android:contentDescription="@string/add_story"
         app:srcCompat="@drawable/baseline_add_24"
         app:layout_constraintEnd_toEndOf="parent"
