@@ -64,16 +64,9 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
-        viewModel.getSession().observe(this) { user ->
-            if (!user.isLogin) {
-                startActivity(Intent(this, WelcomeActivity::class.java))
-                finish()
-            }
-        }
-
-        setupView()
-        setupAction()
         loadTokens()
+        setupView()
+//        setupFab()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -82,12 +75,13 @@ class MainActivity : AppCompatActivity(){
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
+        return when (item.itemId) {
             R.id.action_logout -> {
                 setupAction()
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun setupView() {
@@ -100,14 +94,12 @@ class MainActivity : AppCompatActivity(){
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
-        supportActionBar?.hide()
     }
 
     private fun setupAction() {
-        binding.logoutButton.setOnClickListener {
-            viewModel.logout()
-        }
+        viewModel.logout()
     }
+
 
     private fun loadTokens() {
         lifecycleScope.launch {
@@ -125,6 +117,10 @@ class MainActivity : AppCompatActivity(){
             }
         }
     }
+
+
+//    private fun setupFab() {
+//    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE

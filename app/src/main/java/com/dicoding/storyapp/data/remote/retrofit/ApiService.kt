@@ -1,8 +1,10 @@
 package com.dicoding.storyapp.data.remote.retrofit
 
+import com.dicoding.storyapp.data.remote.response.DetailStoryResponse
 import com.dicoding.storyapp.data.remote.response.LoginResponse
 import com.dicoding.storyapp.data.remote.response.RegisterResponse
 import com.dicoding.storyapp.data.remote.response.StoryResponse
+import retrofit2.Call
 
 import retrofit2.http.*
 
@@ -27,8 +29,8 @@ interface ApiService {
         @Field("password") password: String
     ): LoginResponse
 
-//    @GET("stories/{id}")
-//    fun getStoryDetail(@Path("id") storyId: String): Call<StoryByIDResponse>
+    @GET("stories/{id}")
+    fun getStoryDetail(@Path("id") storyId: String): Call<DetailStoryResponse>
 
 
 //    @Multipart
