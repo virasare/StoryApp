@@ -12,15 +12,15 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _loginResult = MutableLiveData<UserModel>()
-    val loginResult: LiveData<UserModel> = _loginResult
+    private val _loginResult = MutableLiveData<UserModel?>()
+    val loginResult: LiveData<UserModel?> = _loginResult
 
     private val _isLogin = MutableLiveData<Boolean>()
     val isLogin: LiveData<Boolean> = _isLogin
 
     private var extraToken: String? = null
 
-    fun saveSession(user: UserModel) {
+    private fun saveSession(user: UserModel) {
         viewModelScope.launch {
             userRepository.saveSession(user)
         }

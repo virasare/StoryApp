@@ -7,7 +7,7 @@ class DetailStoryRepository(
     private val apiService: ApiService,
     private val userPreference: UserPreference) {
 
-    suspend fun fetchDetailStory(id: String) = apiService.getStoryDetail(id)
+    fun fetchDetailStory(id: String) = apiService.getStoryDetail(id)
 
     companion object{
         @Volatile
