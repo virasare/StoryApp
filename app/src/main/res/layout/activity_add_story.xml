@@ -68,7 +68,7 @@
             app:layout_constraintTop_toBottomOf="@+id/cameraButton">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/TextAreaDescription"
+                android:id="@+id/ed_add_description"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:gravity="top"
@@ -85,7 +85,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/uploadButton"
+            android:id="@+id/button_add"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
