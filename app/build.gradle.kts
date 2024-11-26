@@ -59,4 +59,10 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.logging.interceptor)
+
+//    multipart
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+//    reduce file
+    implementation(libs.androidx.exifinterface)
 }

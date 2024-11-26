@@ -1,5 +1,7 @@
 package com.dicoding.storyapp.view.login
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.dicoding.storyapp.data.pref.UserPreference
 import com.dicoding.storyapp.data.pref.dataStore
 import com.dicoding.storyapp.databinding.ActivityLoginBinding
-import com.dicoding.storyapp.view.ViewModelFactory
+import com.dicoding.storyapp.helper.ViewModelFactory
 import com.dicoding.storyapp.view.main.MainActivity
 import kotlinx.coroutines.launch
 
@@ -37,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
         setupAction()
         observeViewModel()
         setupTextWatchers()
+        playAnimation()
     }
 
     private fun setupView() {
@@ -85,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     setTitle("Yeay")
                     setMessage("Kamu Berhasil Login!")
                     setCancelable(false)
-                    setPositiveButton("Melanjutkan untuk Mendaftar") { _, _ ->
+                    setPositiveButton("Masuk ke Halaman Utama") { _, _ ->
                         val intent = Intent(context, MainActivity::class.java)
                         intent.putExtras(Bundle().apply {
                             putString("extra_token", user.token)
@@ -126,4 +129,28 @@ class LoginActivity : AppCompatActivity() {
                 binding.edLoginPassword.text?.isNotEmpty() == true
     }
 
+    private fun playAnimation(){
+        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+
+        val login = ObjectAnimator.ofFloat(binding.loginButton, View.ALPHA, 1f).setDuration(100)
+        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(100)
+        val message = ObjectAnimator.ofFloat(binding.messageTextView, View.ALPHA, 1f).setDuration(100)
+        val email = ObjectAnimator.ofFloat(binding.emailTextView, View.ALPHA, 1f).setDuration(100)
+        val emailEditTextLayout = ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(100)
+        val password = ObjectAnimator.ofFloat(binding.passwordTextView, View.ALPHA, 1f).setDuration(100)
+        val passwordEditTextLayout = ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(100)
+
+        val together = AnimatorSet().apply {
+            playTogether(login)
+        }
+
+        AnimatorSet().apply {
+            playSequentially(title, message, email, emailEditTextLayout, password, passwordEditTextLayout, together)
+            start()
+        }
+    }
 }

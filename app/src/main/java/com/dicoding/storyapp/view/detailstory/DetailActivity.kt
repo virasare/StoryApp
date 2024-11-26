@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.dicoding.storyapp.databinding.ActivityDetailBinding
-import com.dicoding.storyapp.view.ViewModelFactory
+import com.dicoding.storyapp.helper.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 
 class DetailActivity : AppCompatActivity() {
