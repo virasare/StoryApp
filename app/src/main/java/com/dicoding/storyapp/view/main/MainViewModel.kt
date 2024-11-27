@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.dicoding.storyapp.data.pref.UserModel
+import com.dicoding.storyapp.data.remote.local.StoryRepository
 import com.dicoding.storyapp.data.remote.local.UserRepository
 import com.dicoding.storyapp.data.remote.response.ListStoryItem
 import com.dicoding.storyapp.data.remote.retrofit.ApiConfig
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val repository: UserRepository) : ViewModel() {
+class MainViewModel(private val repository: UserRepository, private val story : StoryRepository) : ViewModel() {
 
     private val _stories = MutableLiveData<List<ListStoryItem?>?>()
     val stories: LiveData<List<ListStoryItem?>?> = _stories
