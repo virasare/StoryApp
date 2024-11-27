@@ -35,6 +35,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding.loginButton.isEnabled = false
 
+        loginViewModel.isLoading.observe(this) { isLoading ->
+            showLoading(isLoading)
+        }
+
         setupView()
         setupAction()
         observeViewModel()
@@ -152,5 +156,9 @@ class LoginActivity : AppCompatActivity() {
             playSequentially(title, message, email, emailEditTextLayout, password, passwordEditTextLayout, together)
             start()
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

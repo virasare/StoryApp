@@ -12,6 +12,7 @@ import com.dicoding.storyapp.view.detailstory.DetailViewModel
 import com.dicoding.storyapp.view.login.LoginViewModel
 import com.dicoding.storyapp.view.main.MainViewModel
 import com.dicoding.storyapp.view.signup.SignupViewModel
+import com.dicoding.storyapp.view.welcome.WelcomeViewModel
 
 class ViewModelFactory(
     private val repository: UserRepository,
@@ -31,9 +32,9 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
                 DetailViewModel(provideRepositoryDetail) as T
             }
-//            modelClass.isAssignableFrom(WelcomeViewModel::class.java) -> {
-//                WelcomeViewModel(repository) as T
-//            }
+            modelClass.isAssignableFrom(WelcomeViewModel::class.java) -> {
+                WelcomeViewModel(repository) as T
+            }
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
                 LoginViewModel(repository) as T
             }
