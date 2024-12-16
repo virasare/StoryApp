@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dicoding.storyapp.data.pref.UserModel
-import com.dicoding.storyapp.data.remote.local.UserRepository
+import com.dicoding.storyapp.data.remote.local.repository.UserRepository
 import com.dicoding.storyapp.data.remote.response.RegisterResponse
 import kotlinx.coroutines.launch
 

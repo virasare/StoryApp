@@ -20,5 +20,14 @@
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="upload">Upload Story</string>
+    <string name="maps">Maps</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="google_maps_key">${BuildConfig.apiKey}</string>
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="terrain_type">Terrain</string>
+    <string name="hybrid_type">Hybrid</string>
+    <string name="retry">Coba lagi</string>
+    <string name="timeout">Timeout</string>
 
 </resources>

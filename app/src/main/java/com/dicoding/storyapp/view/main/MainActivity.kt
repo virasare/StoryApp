@@ -15,10 +15,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.ActivityMainBinding
-import com.dicoding.storyapp.view.StoryAdapter
+import com.dicoding.storyapp.view.adapter.StoryAdapter
 import com.dicoding.storyapp.helper.ViewModelFactory
+import com.dicoding.storyapp.view.adapter.LoadingStateAdapter
 import com.dicoding.storyapp.view.addstory.AddStoryActivity
 import com.dicoding.storyapp.view.detailstory.DetailActivity
+import com.dicoding.storyapp.view.maps.MapsActivity
 import com.dicoding.storyapp.view.welcome.WelcomeActivity
 import kotlinx.coroutines.launch
 
@@ -42,14 +44,20 @@ class MainActivity : AppCompatActivity(){
             }
             startActivity(intent)
         }
-        binding.rvItemStory.adapter = adapter
+        binding.rvItemStory.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                adapter.retry()
+            }
+        )
 
         viewModel.isLoading.observe(this) { isLoading ->
             showLoading(isLoading)
         }
 
-        viewModel.stories.observe(this) { listStory ->
-            adapter.submitList(listStory)
+        viewModel.stories.observe(this) { pagingData ->
+            lifecycleScope.launch {
+                adapter.submitData(pagingData)
+            }
         }
 
         viewModel.errorMessage.observe(this) { errorMessage ->
@@ -79,6 +87,11 @@ class MainActivity : AppCompatActivity(){
         return when (item.itemId) {
             R.id.action_logout -> {
                 setupAction()
+                true
+            }
+            R.id.action_maps -> {
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

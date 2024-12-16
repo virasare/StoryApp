@@ -1,6 +1,11 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("com.google.devtools.ksp")
+    id("kotlin-parcelize")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -15,6 +20,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val secretsFile = rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(secretsFile.inputStream())
+
+        buildConfigField("String", "apiKey", "\"${properties.getProperty("apiKey") ?: ""}\"")
     }
 
     buildTypes {
@@ -36,6 +47,9 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -45,6 +59,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,6 +78,19 @@ dependencies {
 //    multipart
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+
 //    reduce file
     implementation(libs.androidx.exifinterface)
+
+//    location
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
+//    paging
+    implementation(libs.androidx.paging.runtime.ktx)
+
+//    room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
+    ksp(libs.androidx.room.compiler)
 }

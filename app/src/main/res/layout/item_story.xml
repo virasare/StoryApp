@@ -19,7 +19,7 @@
             android:id="@+id/iv_item_photo"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"

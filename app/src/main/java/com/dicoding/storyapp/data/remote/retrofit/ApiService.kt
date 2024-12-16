@@ -15,6 +15,8 @@ interface ApiService {
 
     @GET("stories")
     suspend fun getStories(
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20
     ): StoryResponse
 
     @FormUrlEncoded
@@ -33,7 +35,9 @@ interface ApiService {
     ): LoginResponse
 
     @GET("stories/{id}")
-    fun getStoryDetail(@Path("id") storyId: String): Call<DetailStoryResponse>
+    fun getStoryDetail(
+        @Path("id") storyId: String
+    ): Call<DetailStoryResponse>
 
 
     @Multipart
@@ -42,5 +46,10 @@ interface ApiService {
         @Part file: MultipartBody.Part,
         @Part ("description") description: RequestBody,
     ) : AddStoryResponse
+
+    @GET("stories")
+    suspend fun getStoriesWithLocation(
+        @Query("location") location : Int = 1,
+    ):StoryResponse
 
 }

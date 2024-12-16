@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.dicoding.storyapp.data.pref.UserModel
-import com.dicoding.storyapp.data.remote.local.UserRepository
+import com.dicoding.storyapp.data.remote.local.repository.UserRepository
 
 class WelcomeViewModel (private val repository: UserRepository) : ViewModel() {
     fun getSession(): LiveData<UserModel> {

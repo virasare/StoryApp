@@ -3,14 +3,15 @@ package com.dicoding.storyapp.helper
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.dicoding.storyapp.data.remote.local.DetailStoryRepository
-import com.dicoding.storyapp.data.remote.local.StoryRepository
-import com.dicoding.storyapp.data.remote.local.UserRepository
+import com.dicoding.storyapp.data.remote.local.repository.DetailStoryRepository
+import com.dicoding.storyapp.data.remote.local.repository.StoryRepository
+import com.dicoding.storyapp.data.remote.local.repository.UserRepository
 import com.dicoding.storyapp.di.Injection
 import com.dicoding.storyapp.view.addstory.AddStoryViewModel
 import com.dicoding.storyapp.view.detailstory.DetailViewModel
 import com.dicoding.storyapp.view.login.LoginViewModel
 import com.dicoding.storyapp.view.main.MainViewModel
+import com.dicoding.storyapp.view.maps.MapsViewModel
 import com.dicoding.storyapp.view.signup.SignupViewModel
 import com.dicoding.storyapp.view.welcome.WelcomeViewModel
 
@@ -41,11 +42,15 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(SignupViewModel::class.java) -> {
                 SignupViewModel(repository) as T
             }
+            modelClass.isAssignableFrom(MapsViewModel::class.java) -> {
+                MapsViewModel(provideRepositoryStory) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }
 
     companion object {
+        @Volatile
         private var INSTANCE: ViewModelFactory? = null
         @JvmStatic
         fun getInstance(context: Context): ViewModelFactory {
