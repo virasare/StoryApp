@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
@@ -27,6 +28,15 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
             preferences[TOKEN_KEY] = token
         }
     }
+
+    suspend fun getToken(): String {
+        return dataStore.data
+            .map { preferences ->
+                preferences[TOKEN_KEY] ?: throw IllegalStateException("Token not found")
+            }
+            .first()
+    }
+
 
     fun getSession(): Flow<UserModel> {
         return dataStore.data.map { preferences ->

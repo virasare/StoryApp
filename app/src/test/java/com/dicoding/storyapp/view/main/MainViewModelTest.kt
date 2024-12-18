@@ -1,7 +1,7 @@
 package com.dicoding.storyapp.view.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
@@ -16,6 +16,8 @@ import com.dicoding.storyapp.getOrAwaitValue
 import com.dicoding.storyapp.data.remote.response.ListStoryItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Rule
@@ -27,7 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class MainViewModelTest{
+class MainViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -44,13 +46,13 @@ class MainViewModelTest{
     fun `when Get Story Should Not Null and Return Data`() = runTest {
         val dummyStory = DataDummy.generateDummyStoryResponse()
         val data: PagingData<ListStoryItem> = StoryPagingSource.snapshot(dummyStory)
-        val expectedStory = MutableLiveData<PagingData<ListStoryItem>>()
-        expectedStory.value = data
-//        Mockito.`when`(storyRepository.getStory()).thenReturn(expectedStory)
-        Mockito.`when`(storyRepository.getStory()).thenReturn(expectedStory)
+
+        val flow: Flow<PagingData<ListStoryItem>> = flowOf(data)
+
+        Mockito.`when`(storyRepository.getStory()).thenReturn(flow)
 
         val mainViewModel = MainViewModel(userRepository, storyRepository)
-        val actualStory: PagingData<ListStoryItem> = mainViewModel.stories.getOrAwaitValue()
+        val actualStory = mainViewModel.getStories().asLiveData().getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DIFF_CALLBACK,
@@ -64,26 +66,48 @@ class MainViewModelTest{
         Assert.assertEquals(dummyStory[0], differ.snapshot()[0])
     }
 
-    class StoryPagingSource : PagingSource<Int, ListStoryItem>() {
-        companion object {
-            fun snapshot(items: List<ListStoryItem>): PagingData<ListStoryItem> {
-                return PagingData.from(items)
-            }
-        }
+    @Test
+    fun `when Get Story Empty Should Return No Data`() = runTest {
+        val data: PagingData<ListStoryItem> = PagingData.from(emptyList())
 
-        override fun getRefreshKey(state: PagingState<Int, ListStoryItem>): Int? {
-            return null
-        }
+        val flow: Flow<PagingData<ListStoryItem>> = flowOf(data)
 
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {
-            return LoadResult.Page(emptyList(), null, null)
+        Mockito.`when`(storyRepository.getStory()).thenReturn(flow)
+
+        val mainViewModel = MainViewModel(userRepository, storyRepository)
+        val actualStory = mainViewModel.getStories().asLiveData().getOrAwaitValue()
+
+        val differ = AsyncPagingDataDiffer(
+            diffCallback = StoryAdapter.DIFF_CALLBACK,
+            updateCallback = noopListUpdateCallback,
+            workerDispatcher = Dispatchers.Main,
+        )
+        differ.submitData(actualStory)
+
+        Assert.assertEquals(0, differ.snapshot().size)
+    }
+}
+
+
+class StoryPagingSource : PagingSource<Int, ListStoryItem>() {
+    companion object {
+        fun snapshot(items: List<ListStoryItem>): PagingData<ListStoryItem> {
+            return PagingData.from(items)
         }
     }
 
-    val noopListUpdateCallback = object : ListUpdateCallback {
-        override fun onInserted(position: Int, count: Int) {}
-        override fun onRemoved(position: Int, count: Int) {}
-        override fun onMoved(fromPosition: Int, toPosition: Int) {}
-        override fun onChanged(position: Int, count: Int, payload: Any?) {}
+    override fun getRefreshKey(state: PagingState<Int, ListStoryItem>): Int {
+        return 0
     }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {
+        return LoadResult.Page(emptyList(), 0, 1)
+    }
+}
+
+val noopListUpdateCallback = object : ListUpdateCallback {
+    override fun onInserted(position: Int, count: Int) {}
+    override fun onRemoved(position: Int, count: Int) {}
+    override fun onMoved(fromPosition: Int, toPosition: Int) {}
+    override fun onChanged(position: Int, count: Int, payload: Any?) {}
 }

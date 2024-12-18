@@ -1,19 +1,18 @@
 package com.dicoding.storyapp.view.maps
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.dicoding.storyapp.data.remote.local.repository.StoryRepository
 import com.dicoding.storyapp.data.remote.response.ListStoryItem
-import com.dicoding.storyapp.data.remote.response.StoryResponse
 import kotlinx.coroutines.launch
 
 class MapsViewModel(private val repository: StoryRepository) : ViewModel() {
-    private val _stories = MutableLiveData<Result<StoryResponse>>()
-    val stories: LiveData<Result<StoryResponse>> = _stories
+
+    private val _stories = MutableLiveData<List<ListStoryItem>>()
+    val stories: LiveData<List<ListStoryItem>> = _stories
 
     private val _snackBarMaps = MutableLiveData<String?>()
     val snackBarMaps: LiveData<String?> = _snackBarMaps
@@ -21,18 +20,17 @@ class MapsViewModel(private val repository: StoryRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    val story: LiveData<PagingData<ListStoryItem>> =
-        repository.getStory().cachedIn(viewModelScope)
-
-    fun fetchStoriesWithLocation(){
+    fun fetchStoriesWithLocation() {
         _isLoading.value = true
         viewModelScope.launch {
-            try{
-                val response = repository.getStoriesWithLocation()
-                _stories.value = Result.success(response)
-            }catch (e: Exception){
-                _stories.value = Result.failure(e)
-            }finally {
+            try {
+                val fetchedStories = repository.getStoriesWithLocation()
+                _stories.postValue(fetchedStories)
+            } catch (e: Exception) {
+                Log.e("MapsViewModel", "Failed to fetch stories", e)
+                _stories.postValue(emptyList())
+                _snackBarMaps.postValue("Failed to load stories. Please try again.") // Tampilkan error
+            } finally {
                 _isLoading.value = false
             }
         }

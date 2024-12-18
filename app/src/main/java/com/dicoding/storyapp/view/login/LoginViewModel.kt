@@ -26,7 +26,7 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
-    fun loginUser(email: String, password: String){
+    fun loginUser(email: String, password: String) {
         _isLoading.value = true
         viewModelScope.launch {
             try {

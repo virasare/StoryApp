@@ -84,30 +84,21 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this) { user ->
             binding.progressBar.visibility = View.GONE
             if (user != null) {
-                AlertDialog.Builder(this).apply {
-                    lifecycleScope.launch {
-                        val userPreference = UserPreference.getInstance(dataStore)
-                        userPreference.saveToken(user.token)
-                    }
-                    setTitle("Yeay")
-                    setMessage("Kamu Berhasil Login!")
-                    setCancelable(false)
-                    setPositiveButton("Masuk ke Halaman Utama") { _, _ ->
-                        val intent = Intent(context, MainActivity::class.java)
-                        intent.putExtras(Bundle().apply {
-                            putString("extra_token", user.token)
-                        })
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-
-                        startActivity(intent)
-                        finish()
-                    }
-                    create()
-                    show()
+                lifecycleScope.launch {
+                    val userPreference = UserPreference.getInstance(dataStore)
+                    userPreference.saveToken(user.token)
                 }
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    putExtras(Bundle().apply {
+                        putString("extra_token", user.token)
+                    })
+                }
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
             }
         }
+
         loginViewModel.isLogin.observe(this) { isLogin ->
             if (!isLogin) {
                 AlertDialog.Builder(this).apply {

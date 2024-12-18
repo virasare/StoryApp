@@ -5,14 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dicoding.storyapp.data.remote.local.repository.DetailStoryRepository
-import com.dicoding.storyapp.data.remote.response.DetailStoryResponse
 import com.dicoding.storyapp.data.remote.response.Story
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class DetailViewModel(private val repository: DetailStoryRepository): ViewModel() {
+class DetailViewModel(private val repository: DetailStoryRepository) : ViewModel() {
     private val _storyDetail = MutableLiveData<Story?>()
     val storyDetail: LiveData<Story?> = _storyDetail
 
@@ -22,28 +18,18 @@ class DetailViewModel(private val repository: DetailStoryRepository): ViewModel(
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    fun fetchDetailStory(id: String){
-        _isLoading.value = true
+    fun fetchDetailStory(storyId: String) {
         viewModelScope.launch {
-            val response = repository.fetchDetailStory(id)
-            response.enqueue(object : Callback<DetailStoryResponse>{
-                override fun onResponse(
-                    call: Call<DetailStoryResponse>,
-                    response: Response<DetailStoryResponse>
-                ) {
-                    _isLoading.value = false
-                    if(response.isSuccessful && response.body() != null){
-                        _storyDetail.value = response.body()?.story
-                    }else{
-                        _errorMessage.value = "Error: ${response.message()}"
-                    }
+            _isLoading.value = true
+            try {
+                repository.fetchDetailStory(storyId).collect { result ->
+                    _storyDetail.value = result
                 }
-
-                override fun onFailure(call: Call<DetailStoryResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _errorMessage.value = "Failure: ${t.message}"
-                }
-            })
+            } catch (e: Exception) {
+                _errorMessage.value = "Gagal memuat detail story: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

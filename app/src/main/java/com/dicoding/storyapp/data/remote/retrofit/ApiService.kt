@@ -7,7 +7,6 @@ import com.dicoding.storyapp.data.remote.response.RegisterResponse
 import com.dicoding.storyapp.data.remote.response.StoryResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 
 import retrofit2.http.*
 
@@ -35,9 +34,9 @@ interface ApiService {
     ): LoginResponse
 
     @GET("stories/{id}")
-    fun getStoryDetail(
+    suspend fun getStoryDetail(
         @Path("id") storyId: String
-    ): Call<DetailStoryResponse>
+    ): DetailStoryResponse
 
 
     @Multipart

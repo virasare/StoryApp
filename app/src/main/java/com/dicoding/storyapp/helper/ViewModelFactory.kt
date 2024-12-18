@@ -56,7 +56,10 @@ class ViewModelFactory(
         fun getInstance(context: Context): ViewModelFactory {
             if (INSTANCE == null) {
                 synchronized(ViewModelFactory::class.java) {
-                    INSTANCE = ViewModelFactory(Injection.provideRepository(context), Injection.provideRepositoryStory(context), Injection.provideRepositoryDetail(context))
+                    INSTANCE = ViewModelFactory(
+                        Injection.provideRepository(context),
+                        Injection.provideRepositoryStory(context),
+                        Injection.provideRepositoryDetail(context))
                 }
             }
             return INSTANCE as ViewModelFactory

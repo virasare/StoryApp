@@ -29,5 +29,6 @@
     <string name="hybrid_type">Hybrid</string>
     <string name="retry">Coba lagi</string>
     <string name="timeout">Timeout</string>
+    <string name="location">Location</string>
 
 </resources>

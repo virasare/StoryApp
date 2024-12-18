@@ -25,12 +25,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private val boundsBuilder = LatLngBounds.Builder()
 
     private val viewModel by viewModels<MapsViewModel> {
         ViewModelFactory.getInstance(this)
     }
-
-    private val boundsBuilder = LatLngBounds.Builder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +37,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.fetchStoriesWithLocation()
-
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        viewModel.fetchStoriesWithLocation()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -84,14 +83,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun observeStories() {
+        showLoading(true)  // Show loading while fetching stories
+
+        viewModel.stories.observe(this) { stories ->
+            showLoading(false)  // Hide loading once the data is received
+
+            if (stories != null && stories.isNotEmpty()) {
+                // Add markers for the stories
+                addManyMarker(stories)
+            } else {
+                // Handle error case, show a message
+                showError("No stories available or failed to fetch stories.")
+            }
+        }
+    }
+
+
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
     private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 getMyLocation()
             }
         }
+
     private fun getMyLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
@@ -104,34 +123,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun observeStories(){
-        viewModel.stories.observe(this) { result ->
-            when {
-                result.isSuccess -> {
-                    val storyResponse = result.getOrNull()
-                    storyResponse?.listStory?.let{ stories ->
-                        addManyMarker(stories)
-                    }
-                }
-                result.isFailure -> {
-                    val errorMessage = result.exceptionOrNull()?.message ?: "Terjadi Kesalahan"
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        viewModel.snackBarMaps.observe(this) { message ->
-            if (message != null) {
-                showError(message)
-            }
-        }
-    }
-
     private fun addManyMarker(stories: List<ListStoryItem?>){
         stories.forEach { story ->
             val lat = story?.lat ?: 0.0
             val lon = story?.lon ?: 0.0
             val latLng = LatLng(lat, lon)
-
             if (lat != 0.0 && lon != 0.0) {
                 mMap.addMarker(
                     MarkerOptions()
@@ -146,7 +142,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
     }
 
-    private fun showError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    private fun showLoading(isLoading: Boolean) {
+        val progressBar = binding.progressBar
+        progressBar.visibility = if (isLoading) {
+            android.view.View.VISIBLE
+        } else {
+            android.view.View.GONE
+        }
     }
 }

@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.ActivityMainBinding
@@ -22,6 +23,8 @@ import com.dicoding.storyapp.view.addstory.AddStoryActivity
 import com.dicoding.storyapp.view.detailstory.DetailActivity
 import com.dicoding.storyapp.view.maps.MapsActivity
 import com.dicoding.storyapp.view.welcome.WelcomeActivity
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(){
@@ -50,13 +53,34 @@ class MainActivity : AppCompatActivity(){
             }
         )
 
-        viewModel.isLoading.observe(this) { isLoading ->
-            showLoading(isLoading)
-        }
+        adapter.loadStateFlow
+            .onEach { loadState ->
+                val isLoading = loadState.refresh is LoadState.Loading
+                showLoading(isLoading)
+            }
+            .launchIn(lifecycleScope)
 
-        viewModel.stories.observe(this) { pagingData ->
-            lifecycleScope.launch {
-                adapter.submitData(pagingData)
+        setupView()
+        setupFab()
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.getSession().observe(this) { user ->
+            if (!user.isLogin) {
+                startActivity(Intent(this, WelcomeActivity::class.java))
+                finish()
+            } else {
+                lifecycleScope.launch {
+                    viewModel.getStories().collect { pagingData ->
+                        adapter.submitData(pagingData)
+                    }
+                }
             }
         }
 
@@ -65,18 +89,8 @@ class MainActivity : AppCompatActivity(){
                 showError(errorMessage)
             }
         }
-
-        viewModel.getSession().observe(this) { user ->
-            if (!user.isLogin) {
-                startActivity(Intent(this, WelcomeActivity::class.java))
-                finish()
-            }
-        }
-
-        loadTokens()
-        setupView()
-        setupFab()
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -113,25 +127,6 @@ class MainActivity : AppCompatActivity(){
     private fun setupAction() {
         viewModel.logout()
     }
-
-
-    private fun loadTokens() {
-        lifecycleScope.launch {
-            val token = viewModel.getToken()
-            viewModel.fetchStory(token)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            val token = viewModel.getToken()
-            token.let {
-                viewModel.fetchStory(it)
-            }
-        }
-    }
-
 
     private fun setupFab() {
         binding.fabAddStory.setOnClickListener{
